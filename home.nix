@@ -56,8 +56,8 @@ let
   };
 in
 {
-  home.username = "jbuecker";
-  home.homeDirectory = "/Users/jbuecker";
+  home.username = "s.crudge";
+  home.homeDirectory = "/Users/s.crudge";
   home.stateVersion = "23.11";
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -99,6 +99,7 @@ in
     unstable.git-credential-oauth
     git-crypt
     gh
+    fastfetch
     glab
     gnugrep
     gnused
@@ -139,6 +140,7 @@ in
     unzip
     wget
     wireguard-go
+    tree
     wireguard-tools
     yamlfmt
     zip
@@ -166,11 +168,11 @@ in
   programs.git = {
     enable = true;
 
-    signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJlKV62/B496z2BR02s2HKI62QlDaPeXCbyDrs2TWODw";
+    signing.key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKBEifC1XsdicwjoNw/zCfOJvazsl2Qjptnev377sh6J";
     signing.signByDefault = true;
 
-    userEmail = "j.buecker@shopware.com";
-    userName = "Jan Bücker";
+    userEmail = "s.crudge@shopware.com";
+    userName = "Sam Crudge";
 
     aliases = {
       rs = "restore --staged";
@@ -282,32 +284,18 @@ in
       tailscale = "/Applications/Tailscale.app/Contents/MacOS/Tailscale";
       golangci-update = "${config.home.homeDirectory}/.nix-profile/bin/curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(${config.home.homeDirectory}/.nix-profile/bin/go env GOPATH)/bin";
       mclidev = "go build -C ~/opt/cloud/mcli -o mcli main.go && ~/opt/cloud/mcli/mcli";
+      tf = "terraform";
       gopro = "export GORELEASER_KEY=$(op item get Goreleaser --fields \"label=license key\")";
     };
     initExtra = ''
-      # 1password
-      eval "$(op completion zsh)"; compdef _op op
-
-      # custom scripts
-      ${builtins.readFile ./apps/zsh/scripts.sh}
-
-      # custom secret scripts
-      ${builtins.readFile ./secrets/zsh/scripts.sh}
+      source ${~/connect.sh}
     '';
   };
-
   home.file = {
     ".config/nvim".source = config.lib.file.mkOutOfStoreSymlink ./apps/nvim;
-    ".ssh/allowed_signers".text = ''j.buecker@shopware.com namespaces="git" ${builtins.readFile ./apps/ssh/id_ed25519.pub}'';
+    ".ssh/allowed_signers".text = ''s.crudge@shopware.com namespaces="git" ${builtins.readFile ./apps/ssh/id_ed25519.pub}'';
     ".config/lazygit/config.yml".source = config.lib.file.mkOutOfStoreSymlink ./apps/lazygit/config.yml;
     ".config/bat/config".source = config.lib.file.mkOutOfStoreSymlink ./apps/bat/config;
     ".config/wezterm".source = config.lib.file.mkOutOfStoreSymlink ./apps/wezterm;
-
-    # secrets
-    "intelephense/licence.txt".source = config.lib.file.mkOutOfStoreSymlink ./secrets/intelephense.txt;
-    ".aws/config".source = config.lib.file.mkOutOfStoreSymlink ./secrets/aws/config;
-    ".aws/credentials".source = config.lib.file.mkOutOfStoreSymlink ./secrets/aws/credentials;
-    ".ssh/config".source = config.lib.file.mkOutOfStoreSymlink ./secrets/ssh/config;
-    ".netrc".source = config.lib.file.mkOutOfStoreSymlink ./secrets/netrc;
   };
 }
